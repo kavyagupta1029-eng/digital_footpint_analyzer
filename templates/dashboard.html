@@ -2,37 +2,92 @@
 <html>
 <head>
 <title>Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 body {
-    background:#0f2027;
+    font-family:'Segoe UI';
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     color:white;
     text-align:center;
 }
+
 .card {
-    background:#222;
-    margin:20px;
+    background: rgba(0,0,0,0.6);
+    margin:20px auto;
     padding:20px;
+    width:80%;
     border-radius:15px;
 }
-a { color:#00ffcc; }
+
+.chart {
+    width:80%;
+    margin:30px auto;
+}
 </style>
 </head>
 
 <body>
 
 <h1>📊 Dashboard</h1>
+
 <p>
 Welcome {{ user }} |
 <a href="/">Home</a> |
 <a href="/logout">Logout</a>
 </p>
 
+<!-- Charts -->
+<div class="chart">
+<canvas id="riskChart"></canvas>
+</div>
+
+<div class="chart">
+<canvas id="platformChart"></canvas>
+</div>
+
+<script>
+// Risk Chart
+new Chart(document.getElementById("riskChart"), {
+    type: 'bar',
+    data: {
+        labels: ["High", "Medium", "Low"],
+        datasets: [{
+            label: "Risk",
+            data: [
+                {{ risk_data["High"] }},
+                {{ risk_data["Medium"] }},
+                {{ risk_data["Low"] }}
+            ]
+        }]
+    }
+});
+
+// Platform Chart
+new Chart(document.getElementById("platformChart"), {
+    type: 'pie',
+    data: {
+        labels: ["LinkedIn", "Instagram", "GitHub", "Other"],
+        datasets: [{
+            data: [
+                {{ platform_data["LinkedIn"] }},
+                {{ platform_data["Instagram"] }},
+                {{ platform_data["GitHub"] }},
+                {{ platform_data["Other"] }}
+            ]
+        }]
+    }
+});
+</script>
+
+<!-- History -->
 {% for s in searches %}
 <div class="card">
 <h3>{{ s.name }} - {{ s.city }}</h3>
 <p>{{ s.college }}</p>
 <pre>{{ s.result }}</pre>
-<a href="/delete/{{ s.id }}">🗑 Delete</a>
+<a href="/delete/{{ s.id }}">Delete</a>
 </div>
 {% endfor %}
 

@@ -29,7 +29,7 @@ class Search(db.Model):
 
 
 # -------------------------
-# HOME (PROTECTED)
+# HOME
 # -------------------------
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -64,20 +64,49 @@ def home():
 
 
 # -------------------------
-# DASHBOARD
+# DASHBOARD WITH CHARTS
 # -------------------------
 @app.route('/dashboard')
 def dashboard():
     if 'user' not in session:
         return redirect('/login')
 
-    searches = Search.query.filter_by(username=session['user']).order_by(Search.id.desc()).all()
+    searches = Search.query.filter_by(username=session['user']).all()
 
-    return render_template('dashboard.html', searches=searches, user=session['user'])
+    # Chart Data
+    risk_data = {"High":0, "Medium":0, "Low":0}
+    platform_data = {"LinkedIn":0, "Instagram":0, "GitHub":0, "Other":0}
+
+    for s in searches:
+        text = s.result.lower()
+
+        if "high" in text:
+            risk_data["High"] += 1
+        elif "medium" in text:
+            risk_data["Medium"] += 1
+        else:
+            risk_data["Low"] += 1
+
+        if "linkedin" in text:
+            platform_data["LinkedIn"] += 1
+        elif "instagram" in text:
+            platform_data["Instagram"] += 1
+        elif "github" in text:
+            platform_data["GitHub"] += 1
+        else:
+            platform_data["Other"] += 1
+
+    return render_template(
+        'dashboard.html',
+        searches=searches,
+        user=session['user'],
+        risk_data=risk_data,
+        platform_data=platform_data
+    )
 
 
 # -------------------------
-# DELETE SEARCH
+# DELETE
 # -------------------------
 @app.route('/delete/<int:id>')
 def delete(id):
