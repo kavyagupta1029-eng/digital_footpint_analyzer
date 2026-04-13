@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+<style>
+body {
+    background:#0f2027;
+    color:white;
+    text-align:center;
+}
+.card {
+    background:#222;
+    margin:20px;
+    padding:20px;
+    border-radius:15px;
+}
+a { color:#00ffcc; }
+</style>
+</head>
+
+<body>
+
+<h1>📊 Dashboard</h1>
+<p>
+Welcome {{ user }} |
+<a href="/">Home</a> |
+<a href="/logout">Logout</a>
+</p>
+
+{% for s in searches %}
+<div class="card">
+<h3>{{ s.name }} - {{ s.city }}</h3>
+<p>{{ s.college }}</p>
+<pre>{{ s.result }}</pre>
+<a href="/delete/{{ s.id }}">🗑 Delete</a>
+</div>
+{% endfor %}
+
+</body>
+</html>
