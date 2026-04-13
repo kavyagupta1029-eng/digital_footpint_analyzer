@@ -33,6 +33,9 @@ def search_data(name, city, college):
         # 🔑 ADD YOUR SCRAPERAPI KEY HERE
         api_key = os.getenv("SCRAPER_API_KEY")
 
+        if not api_key:
+            return analyze_results([])  # fallback safely
+
         scraper_url = f"http://api.scraperapi.com?api_key={api_key}&url={url}"
 
         response = requests.get(scraper_url)
