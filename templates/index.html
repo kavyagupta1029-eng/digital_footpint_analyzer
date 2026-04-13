@@ -9,9 +9,14 @@ body {
     background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     color:white;
     text-align:center;
+    margin:0;
 }
 
-/* FORM */
+h1 {
+    font-size:32px;
+    text-shadow: 0 0 15px #00ffcc;
+}
+
 .container {
     background: rgba(255,255,255,0.05);
     backdrop-filter: blur(12px);
@@ -22,99 +27,108 @@ body {
     box-shadow: 0 0 25px rgba(0,255,200,0.2);
 }
 
-input, button {
+input {
     width:90%;
     padding:12px;
     margin:10px;
     border-radius:10px;
     border:none;
+    outline:none;
+    background:#111;
+    color:white;
+    border:1px solid #00ffcc;
+}
+
+input:focus {
+    box-shadow:0 0 10px #00ffcc;
 }
 
 button {
+    width:90%;
+    padding:12px;
+    margin:10px;
+    border-radius:10px;
+    border:none;
     background: linear-gradient(45deg,#00adb5,#00ffcc);
     font-weight:bold;
     cursor:pointer;
-    transition:0.3s;
 }
 
 button:hover {
     transform: scale(1.05);
 }
 
-/* RESULT CARD */
+#loader {
+    display:none;
+    margin-top:20px;
+}
+
+.spinner {
+    border: 5px solid rgba(255,255,255,0.1);
+    border-top: 5px solid #00ffcc;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin:auto;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
 .card {
     background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(10px);
     border-radius:20px;
     padding:25px;
     width:70%;
     margin:30px auto;
     text-align:left;
     box-shadow: 0 0 30px rgba(0,255,200,0.3);
-    animation: fadeIn 1s ease;
+    animation: fadeSlide 0.8s forwards;
 }
 
-@keyframes fadeIn {
-    from {opacity:0; transform:translateY(20px);}
-    to {opacity:1;}
+@keyframes fadeSlide {
+    from {opacity:0; transform:translateY(30px);}
+    to {opacity:1; transform:translateY(0);}
 }
 
 pre {
     white-space: pre-wrap;
-    font-size:14px;
 }
 
-/* CHATBOX */
 .chatbox {
     width:70%;
     margin:30px auto;
     background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(10px);
     padding:20px;
     border-radius:20px;
-    box-shadow: 0 0 25px rgba(0,255,200,0.2);
 }
 
 .chat-area {
     height:250px;
     overflow-y:auto;
-    padding:10px;
-    border-radius:10px;
     background:#0a0a0a;
+    padding:10px;
 }
 
-/* CHAT BUBBLES */
-.user {
-    text-align:right;
-    margin:10px;
-}
-
+.user { text-align:right; margin:10px; }
 .user span {
-    background:#00adb5;
-    padding:8px 12px;
-    border-radius:15px;
-    display:inline-block;
-}
-
-.bot {
-    text-align:left;
-    margin:10px;
-}
-
-.bot span {
-    background:#333;
-    padding:8px 12px;
-    border-radius:15px;
-    display:inline-block;
-}
-
-/* SCROLLBAR */
-.chat-area::-webkit-scrollbar {
-    width:6px;
-}
-.chat-area::-webkit-scrollbar-thumb {
     background:#00ffcc;
+    color:black;
+    padding:8px;
     border-radius:10px;
+}
+
+.bot { text-align:left; margin:10px; }
+.bot span {
+    background:#222;
+    padding:8px;
+    border-radius:10px;
+}
+
+@media(max-width:600px){
+    .container,.card,.chatbox{width:90%;}
 }
 </style>
 
@@ -142,7 +156,6 @@ function sendMessage(){
     chat.innerHTML+=`<div class="user"><span>${msg}</span></div>`;
 
     let res="Ask about privacy, risk or footprint.";
-
     let lower=msg.toLowerCase();
 
     if(lower.includes("privacy"))
@@ -151,8 +164,6 @@ function sendMessage(){
         res="Reduce exposure on social platforms.";
     else if(lower.includes("footprint"))
         res="Digital footprint is your online presence.";
-    else if(lower.includes("improve"))
-        res="Update settings, delete old data and avoid oversharing.";
 
     setTimeout(()=>{
         chat.innerHTML+=`<div class="bot"><span>${res}</span></div>`;
@@ -167,7 +178,6 @@ function sendMessage(){
 <body>
 
 <h1>🔍 Digital Footprint Analyzer</h1>
-<p>Analyze how much of your data is visible online</p>
 
 <div class="container">
 <form method="POST">
@@ -178,30 +188,39 @@ function sendMessage(){
 </form>
 </div>
 
+<div id="loader">
+    <div class="spinner"></div>
+    <p>Analyzing...</p>
+</div>
+
 {% if result %}
 <div class="card">
-<h2>📊 Analysis Result</h2>
+<h2>📊 Result</h2>
 
 <pre id="output" style="display:none;">{{ result }}</pre>
 <pre id="typed"></pre>
 
 <script>
 typeEffect(
-    document.getElementById("output").innerText,
-    document.getElementById("typed")
+document.getElementById("output").innerText,
+document.getElementById("typed")
 );
 </script>
 </div>
 
 <div class="chatbox">
 <h3>🤖 AI Assistant</h3>
-
 <div id="chat" class="chat-area"></div>
-
-<input id="userInput" placeholder="Ask something...">
+<input id="userInput">
 <button onclick="sendMessage()">Send</button>
 </div>
 {% endif %}
+
+<script>
+document.querySelector("form").addEventListener("submit", function(){
+document.getElementById("loader").style.display="block";
+});
+</script>
 
 </body>
 </html>
